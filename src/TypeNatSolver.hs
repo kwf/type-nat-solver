@@ -530,7 +530,7 @@ solverImproveModel s model = go [] [] model
   mustBeL _ _ _ _ [] = return Nothing
 
   constToTy val = case val of
-                    Int n | n >= 0 -> mkNumLitTy n
+                    Int n {-| n >= 0-} -> mkNumLitTy n
                     Bool b         -> bool b
                     _ -> panic ("Unexpecetd value in model: " ++ show val)
 
