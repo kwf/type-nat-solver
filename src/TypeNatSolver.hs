@@ -506,23 +506,24 @@ solverImproveModel s model = go [] [] model
     , y1 /= y2
     , let dx = x1 - x2
     , (a,0) <- divMod dx (y1 - y2)
-    , a >= 0
+    {-, a >= 0 -}
     , let b = x1 - a * y1
-    , b >= 0 = do always <- solverProve s
-                          $ SMT.eq (SMT.const x)
-                                   (SMT.add
-                                      (SMT.mul (SMT.int a) (SMT.const y))
-                                      (SMT.int b))
-
-                  if always
-                    then do tx <- getVarType s x
-                            ty <- getVarType s y
-                            let ay  | a == 1     = ty
-                                    | otherwise  = mul (mkNumLitTy a) ty
-                                rhs | b == 0    = ay
-                                    | otherwise = add ay (mkNumLitTy b)
-                            return (Just (tx, rhs))
-                    else return Nothing
+    {-, b >= 0-}
+    = do always <- solverProve s
+                 $ SMT.eq (SMT.const x)
+                          (SMT.add
+                             (SMT.mul (SMT.int a) (SMT.const y))
+                             (SMT.int b))
+ 
+         if always
+           then do tx <- getVarType s x
+                   ty <- getVarType s y
+                   let ay  | a == 1     = ty
+                           | otherwise  = mul (mkNumLitTy a) ty
+                       rhs | b == 0    = ay
+                           | otherwise = add ay (mkNumLitTy b)
+                   return (Just (tx, rhs))
+           else return Nothing
 
   mustBeL m1 x x1 x2 (_ : more) = mustBeL m1 x x1 x2 more
 
